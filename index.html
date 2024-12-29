@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Party Fund Manager</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      width: 95%;
+      max-width: 800px;
+      padding: 20px;
+      background: #ffffff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      color: #333;
+      margin-bottom: 20px;
+    }
+    form {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    input, select {
+      flex: 1;
+      min-width: 30%;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      font-size: 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+    th {
+      background-color: #f1f1f1;
+      font-weight: bold;
+    }
+    .delete-btn {
+      background: transparent;
+      border: none;
+      color: #ff4d4d;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      color: #cc0000;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>30 LAST NIGHT PARTY FUNDS</h1>
+    <form id="dataForm">
+      <input type="text" id="name" placeholder="Name" required>
+      <input type="number" id="amount" placeholder="Amount" required>
+      <select id="status" required>
+        <option value="" disabled selected>Status</option>
+        <option value="Paid">Paid</option>
+        <option value="Due">Due</option>
+      </select>
+      <button type="submit">+ Add</button>
+    </form>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Amount</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="dataTable"></tbody>
+    </table>
+  </div>
+  <script>
+    const form = document.getElementById('dataForm');
+    const tableBody = document.getElementById('dataTable');
+    let data = JSON.parse(localStorage.getItem('partyData')) || [];
+
+    const renderTable = () => {
+      tableBody.innerHTML = '';
+      data.forEach((entry, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${entry.name}</td>
+          <td>${entry.amount}</td>
+          <td>${entry.status}</td>
+          <td>
+            <button class="delete-btn" onclick="deleteRow(${index})">🗑️</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    };
+
+    const deleteRow = (index) => {
+      data.splice(index, 1);
+      localStorage.setItem('partyData', JSON.stringify(data));
+      renderTable();
+    };
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const amount = document.getElementById('amount').value.trim();
+      const status = document.getElementById('status').value;
+
+      if (name && amount && status) {
+        data.push({ name, amount, status });
+        localStorage.setItem('partyData', JSON.stringify(data));
+        renderTable();
+        form.reset();
+      }
+    });
+
+    renderTable();
+  </script>
+</body>
+</html>
